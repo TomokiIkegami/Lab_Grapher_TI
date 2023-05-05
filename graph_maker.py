@@ -8,8 +8,8 @@ import numpy as np  # グラフ描画（軸目盛り作成）
 
 # # 始めに定義する変数など
 # ## 各種ファイル名
-input_data_name="data.csv" # 入力データのファイル名
-output_file_name="graph.svg" # 出力グラフのファイル名
+input_data_name = "data.csv"  # 入力データのファイル名
+output_file_name = "graph.svg"  # 出力グラフのファイル名
 
 # ## 補助単位の対応表（辞書型データ）
 aux_unit_dic = {
@@ -155,7 +155,7 @@ def get_greek(sig):
 # df:データフレーム（Data Frame：pandasの表形式の型）
 # 文字コードはcsvファイルに合わせて設定すれば良い（今回はshift-jisに設定。Excelからcsvを生成するとshift-jisになるため）。
 df = pd.read_csv(input_data_name, encoding="utf_8_sig")
-print("入力データ",df)   # 入力データ
+print("入力データ", df)   # 入力データ
 # # 初期設定
 # ## グラフ全体のフォントを「Times New Roman」に
 plt.rcParams['font.family'] = "Times New Roman"
@@ -295,9 +295,9 @@ ax.yaxis.set_major_formatter(ptick.ScalarFormatter(
 # ax.ticklabel_format(style="sci",axis="x",scilimits=(-3,-3)) # 10^(-3)固定で表示
 # ax.ticklabel_format(style="sci",axis="y",scilimits=(9,9)) # 10^(9)固定で表示
 # y_label[0][1] = "$H$" # y軸の量記号を手動設定
-ax.set_xlabel("{0} {1} [{2}{3}".format(x_label[0].replace("_"," "), get_greek(x_label[1]), aux_unit_x, x_unit[cur_x:]), fontsize=12,
+ax.set_xlabel("{0} {1} [{2}{3}".format(x_label[0].replace("_", " "), get_greek(x_label[1]), aux_unit_x, x_unit[cur_x:]), fontsize=12,
               fontname="Times New Roman")    # 軸ラベルを英語で入力。$マークに挟まれている範囲は数式が入力可能。ここでもフォントサイズの設定が可能。
-ax.set_ylabel("{0} {1} [{2}{3}".format(y_label[0][0].replace("_"," "), get_greek(y_label[0][1]), aux_unit_y, y_unit[0][cur_y:]), fontsize=12,
+ax.set_ylabel("{0} {1} [{2}{3}".format(y_label[0][0].replace("_", " "), get_greek(y_label[0][1]), aux_unit_y, y_unit[0][cur_y:]), fontsize=12,
               fontname="Times New Roman")  # 軸ラベルを英語で入力。$マークに挟まれている範囲は数式が入力可能。ここでもフォントサイズの設定が可能。
 
 # # グラフの表示と保存

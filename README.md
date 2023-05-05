@@ -10,14 +10,14 @@ Excelでグラフを研究室のフォーマットに合わせる作業が大変
 * 縦軸・横軸の補助単位を自動設定
 * 生成したグラフは.svg形式で自動保存（Wordに貼るとグラフが綺麗）
 * グラフエリアサイズを指定可能（mm単位）
-* ラベルに数式を入力可能（Tex形式の数式入力。上付き・下付き文字なども入力可能。
+* ラベルに数式を入力可能（Tex形式の数式入力。上付き・下付き文字なども入力可能。）
   
   ＜入力例＞
   * "\$\omega_{\rm{max}}\$" → $\omega_{\rm{max}}$
   * "\$\theta=\frac{F_Y}{F_X}\$" → $\theta=\frac{F_Y}{F_X}$
 
 # Installation
-## 「data.csv」 preparetion
+## Prepare「data.csv」 
 　実験データを「data.csv」に保存してください。保存時は次の形式でデータを保存してください。
 
 **◎「data.csv」の中身◎**
@@ -39,3 +39,20 @@ Excelでグラフを研究室のフォーマットに合わせる作業が大変
 
 ## Paste 「graph_maker.py」
 　グラフファイル「graph.svg」をレポートなどに貼り付けてください。拡大しても綺麗なグラフです。
+
+# Examples
+　Lab_Grapher_TIを使って作ったグラフ例です。
+
+![test1](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test1/graph.svg)
+
+![test2](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test2/graph.svg)
+
+![test3](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test3/graph.svg)
+
+![test4](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test4/graph.svg)
+
+![test5](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test5/graph.svg)
+
+![test6](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test6/graph.svg)
+
+![test7](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test7/graph.svg)

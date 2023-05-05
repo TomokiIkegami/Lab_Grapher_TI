@@ -248,13 +248,13 @@ for i in range(1, len(df.columns.values[1:])+1):
 # print("df4",df4)
 # ## データフレームとmatplotlibを連携（タイミング重要）
 # ### 折れ線描画
-df4.plot(ax=ax, x=df4.columns.values[0],
-         y=df4.columns.values[1:])  # 折れ線だけならこの行をだけ有効に
+# df4.plot(ax=ax, x=df4.columns.values[0],
+#          y=df4.columns.values[1:])  # 折れ線だけならこの行をだけ有効に
 # print(df4.iloc[:,0].to_list())
 # ### 散布図描画
-# for i in range(len(df.columns.values[1:])):
-# df4.plot(ax=ax,x=df4.columns.values[0],y=df4.columns.values[i+1],smarker=point_mk[i],markersize=4)   # この行を有効にすると、折れ線とマーカーを同時に生成可能
-# ax.scatter(x=df4.iloc[:,0].to_list(),y=df4.iloc[:,i+1].to_list(),s=20,marker=point_mk[i])  # 散布図のみならこの行をだけ有効に（s:マーカーサイズ、marker:マーカ種類）
+for i in range(len(df.columns.values[1:])):
+    df4.plot(ax=ax,x=df4.columns.values[0],y=df4.columns.values[i+1],marker=point_mk[i],markersize=4)   # この行を有効にすると、折れ線とマーカーを同時に生成可能
+    # ax.scatter(x=df4.iloc[:,0].to_list(),y=df4.iloc[:,i+1].to_list(),s=20,marker=point_mk[i])  # 散布図のみならこの行をだけ有効に（s:マーカーサイズ、marker:マーカ種類）
 
 # print(df4.iloc[:,1].to_list())
 # ## 軸の値を補助単位に合わせて変更

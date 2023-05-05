@@ -7,6 +7,10 @@ import pylab    # グラフ描画
 import numpy as np  # グラフ描画（軸目盛り作成）
 
 # # 始めに定義する変数など
+# ## 各種ファイル名
+input_data_name = "data.csv"  # 入力データのファイル名
+output_file_name = "graph.svg"  # 出力グラフのファイル名
+
 # ## 補助単位の対応表（辞書型データ）
 aux_unit_dic = {
     18: 'E',     # エクサ
@@ -28,7 +32,7 @@ aux_unit_dic = {
 mm = 1.0/25.4  # インチをmmに換算する係数 ※ 1[in]=25.4[mm]
 
 # ## マーカー（データの数より多く用意）
-point_mk=["^","s","o","x","o","o","o","o","None"]  # マーカーの設定（必要に応じて）
+point_mk = ["^", "s", "o", "x", "o", "o", "o", "o", "None"]  # マーカーの設定（必要に応じて）
 
 # # 関数
 # ## 指定した倍数に丸めてくれる関数（そのまま使わせてもらいました）URL:https://ishi-tech.biz/python-mround/
@@ -101,15 +105,17 @@ def get_num_exp(max_val):   # max_val:軸の最大絶対値
 # ## 指数部に対応した補助単位（ギガ、キロ、ミリ、マイクロなど）を自動で選ぶ関数
 
 
-def get_aux_unit_label(dt):
+def get_aux_unit_label(axis_unit, dt):
     # 指数部に対応した補助単位を辞書から自動選択
     aux_unit = aux_unit_dic[dt]
     # A=9
     # print("10の{}乗を表す補助単位は{}です".format(A,aux_unit[A]))
-    if dt == 0:
+    if dt == 0 and axis_unit[1] == '':
         cur = 1   # cur:軸ラベルの単位表記に使うインデックス（cur==1:補助単位がないとき）
-    else:
+    elif dt == 0 and axis_unit[1] == '-':
         cur = 2   # cur:軸ラベルの単位表記に使うインデックス（cur==2:補助単位があるとき）
+    else:
+        cur = 2
     return aux_unit, cur  # 補助単位の文字と、軸ラベルの単位表記に使うインデックスを取得
 
 # ## 逆順の辞書を作る関数
@@ -131,11 +137,25 @@ def get_e_aux_unit(axis_unit):
     # print(e_aux_unit)   #　乗数（指数部）を表示
     return e_aux_unit  # 補助単位に対応した指数部を出力
 
+# 下付き文字つきの量記号から、ギリシャ文字だけを抽出する関数
+
+
+def get_greek(sig):
+    a = sig.replace("{", "", 1)    # 数式の下付き添え字をかくときのカッコを削除
+    b = a.replace("}", "", 1)   # 数式の下付き添え字をかくときのカッコを削除
+    # c=re.findall("(?<=\{).+?(?=\})",b) # 数式の下付き添え字だけを抽出
+    d = re.sub("\{.+?\}", "", b)  # カッコの個数を減らす
+    # print("d",d)
+    greek = d.replace("_\\rm", "")  # 添え字の目印を消去（\rm{}は{}の中が斜体でなくなるようにするTex記号）
+    # print("e",e)
+    return greek  # ギリシャ文字を返す
+
 
 # # データフレームdfをcsvから作成
 # df:データフレーム（Data Frame：pandasの表形式の型）
-df = pd.read_csv("data.csv", encoding="shift-jis") # 文字コードはcsvファイルに合わせて設定すれば良い（今回はshift-jisに設定。Excelからcsvを生成するとshift-jisになるため）。
-# print(df)
+# 文字コードはcsvファイルに合わせて設定すれば良い（今回はshift-jisに設定。Excelからcsvを生成するとshift-jisになるため）。
+df = pd.read_csv(input_data_name, encoding="utf_8_sig")
+print("入力データ", df)   # 入力データ
 # # 初期設定
 # ## グラフ全体のフォントを「Times New Roman」に
 plt.rcParams['font.family'] = "Times New Roman"
@@ -143,14 +163,15 @@ plt.rcParams['font.family'] = "Times New Roman"
 plt.rcParams['mathtext.fontset'] = "stix"
 plt.rcParams["font.size"] = 12                    # フォントサイズを12ptに
 # ## グラフサイズの設定（画面に表示されるウィンドウのサイズ、保存されるときのサイズ）
-plt.rcParams["figure.figsize"] = (120*mm, 70*mm)  # 全描画範囲のサイズ指定
+plt.rcParams["figure.figsize"] = (130*mm, 70*mm)  # 全描画範囲のサイズ指定
 # ## 目盛りの設定
 plt.rcParams['xtick.direction'] = "inout"  # 交差
 plt.rcParams['ytick.direction'] = "in"  # 内向き
 # ## グラフを用意
 fig = plt.figure()  # fig:グラフ描画の基礎になるオブジェクト
-ax = fig.add_subplot(111)  # ax:グラフカスタマイズ（軸の設定など）に必要なオブジェクト ※311=グラフエリアを3×1マスで区切ったのうちの1番目、つまり一番上
-# ax2 = fig.add_subplot(111)  # ax:グラフカスタマイズ（軸の設定など）に必要なオブジェクト 
+# ax:グラフカスタマイズ（軸の設定など）に必要なオブジェクト ※311=グラフエリアを3×1マスで区切ったのうちの1番目、つまり一番上
+ax = fig.add_subplot(111)
+# ax2 = fig.add_subplot(111)  # ax:グラフカスタマイズ（軸の設定など）に必要なオブジェクト
 # ax.set_aspect('equal')  # 縦横比を一定に
 
 # # 補助単位に応じてデータを加工
@@ -164,7 +185,7 @@ y_label = []    # y軸ラベルを入れるリスト
 x_label = str(df.columns.values[0]).split(' ')  # 空白で分割
 print(x_label)  # 分割結果を表示
 # ## 縦軸
-for j in range(1,len(df.columns.values[1:])+1):
+for j in range(1, len(df.columns.values[1:])+1):
     y_label.append(str(df.columns.values[j]).split(' '))  # 空白で分割
 print(y_label)  # 分割結果を表示
 
@@ -189,51 +210,53 @@ for i in range(len(df.columns.values[1:])):
 # # データを補助単位無しの値に戻す
 # 1列目のy軸データの補助単位を全yデータに適用。（y軸の単位はすべてそろったデータを用意する）
 # ## x軸
-df2=df.copy() # データフレームをコピー（元のデータフレームが変更されないようにするため）
-df2.iloc[:,0]*=10**x_e_aux_unit # x軸を補助単位なしの値に変更
+df2 = df.copy()  # データフレームをコピー（元のデータフレームが変更されないようにするため）
+df2.iloc[:, 0] *= 10**x_e_aux_unit  # x軸を補助単位なしの値に変更
 # ## y軸
-df3=df2.copy()
-for i in range(1,len(df.columns.values[1:])+1): # x軸の処理は済ませているので添え字は1から
-    df3.iloc[:,i]*=10**y_e_aux_unit[i-1]    # y軸を補助単位なしの値に変更
+df3 = df2.copy()
+for i in range(1, len(df.columns.values[1:])+1):  # x軸の処理は済ませているので添え字は1から
+    df3.iloc[:, i] *= 10**y_e_aux_unit[i-1]    # y軸を補助単位なしの値に変更
 # print(df3) # 補助単位無しのデータ（表示上の単位は元のまま）
 # # 軸の設定
 # ## 軸の描画に必要な情報を取得
 # ### 各軸の一番大きな絶対値を取得
-ana_x=df3[df.columns.values[0]].describe()   # ※ana→analysis。ana_x:x軸を分析した時の各種統計量（最大/最小値、標準偏差、平均など...）
-ana_y=[]    # ana_y:y軸を分析した時の各種統計量（最大・最小値、標準偏差、平均など...）
-for i in range(1,len(df.columns.values[1:])+1):
+# ※ana→analysis。ana_x:x軸を分析した時の各種統計量（最大/最小値、標準偏差、平均など...）
+ana_x = df3[df.columns.values[0]].describe()
+ana_y = []    # ana_y:y軸を分析した時の各種統計量（最大・最小値、標準偏差、平均など...）
+for i in range(1, len(df.columns.values[1:])+1):
     ana_y.append(df3[df.columns.values[i]].describe())  # y軸の統計量を保存
-x_max=ana_x[-1] #　x軸の最大値を保存
-x_min=ana_x[3]  # y軸の最大値を保存
-x_abs_max = max(x_max,x_min,key=abs)    # x軸の最大絶対値を取得
-y_max_min=[]    # y軸の全系列の最大・最小値を保存するリスト
+x_max = ana_x[-1]  # 　x軸の最大値を保存
+x_min = ana_x[3]  # y軸の最大値を保存
+x_abs_max = max(x_max, x_min, key=abs)    # x軸の最大絶対値を取得
+y_max_min = []    # y軸の全系列の最大・最小値を保存するリスト
 for i in range(len(df.columns.values[1:])):
-    y_max_min.append(max(ana_y[i][-1],ana_y[i][3],key=abs)) # 最大・最小値を保存
-y_abs_max = max(y_max_min,key=abs)  # y軸の最大絶対値を取得
+    y_max_min.append(max(ana_y[i][-1], ana_y[i][3], key=abs))  # 最大・最小値を保存
+y_abs_max = max(y_max_min, key=abs)  # y軸の最大絶対値を取得
 # ### 各軸の最大値の指数表記を取得
 exp_x, dt_x = get_num_exp(x_abs_max)
 exp_y, dt_y = get_num_exp(y_abs_max)
 # ### x軸、y軸の補助単位をそれぞれ取得
-aux_unit_x, cur_x = get_aux_unit_label(dt_x)    # aux_unit_x:x軸の補助単位
-aux_unit_y, cur_y = get_aux_unit_label(dt_y)    # aux_unit_y:y軸の補助単位
+aux_unit_x, cur_x = get_aux_unit_label(x_unit, dt_x)    # aux_unit_x:x軸の補助単位
+aux_unit_y, cur_y = get_aux_unit_label(y_unit[0], dt_y)    # aux_unit_y:y軸の補助単位
 # ### 描画用のデータフレームを生成（補助単位を使った時の仮数部のみのデータを作るため）
-df4=df3.copy()  # 補助単位無しのデータフレームをコピー
+df4 = df3.copy()  # 補助単位無しのデータフレームをコピー
 # ## x軸
-df4.iloc[:,0]*=10**(-dt_x)  # 補助単位の倍率を元データにかける（元データが補助単位の分だけ大きくなるか小さくなる）
+df4.iloc[:, 0] *= 10**(-dt_x)  # 補助単位の倍率を元データにかける（元データが補助単位の分だけ大きくなるか小さくなる）
 # ## y軸
-for i in range(1,len(df.columns.values[1:])+1):
-    df4.iloc[:,i]*=10**(-dt_y) # 補助単位の倍率を元データにかける（元データが補助単位の分だけ大きくなるか小さくなる）
+for i in range(1, len(df.columns.values[1:])+1):
+    df4.iloc[:, i] *= 10**(-dt_y)  # 補助単位の倍率を元データにかける（元データが補助単位の分だけ大きくなるか小さくなる）
 # print("df4",df4)
 # ## データフレームとmatplotlibを連携（タイミング重要）
 # ### 折れ線描画
-# df4.plot(ax=ax,x=df4.columns.values[0],y=df4.columns.values[1:])  # 折れ線だけならこの行をだけ有効に
+# df4.plot(ax=ax, x=df4.columns.values[0],
+#          y=df4.columns.values[1:])  # 折れ線だけならこの行をだけ有効に
 # print(df4.iloc[:,0].to_list())
 # ### 散布図描画
 for i in range(len(df.columns.values[1:])):
-    df4.plot(ax=ax,x=df4.columns.values[0],y=df4.columns.values[i+1],marker=point_mk[i])   # この行を有効にすると、折れ線とマーカーを同時に生成可能
+    df4.plot(ax=ax,x=df4.columns.values[0],y=df4.columns.values[i+1],marker=point_mk[i],markersize=4)   # この行を有効にすると、折れ線とマーカーを同時に生成可能
     # ax.scatter(x=df4.iloc[:,0].to_list(),y=df4.iloc[:,i+1].to_list(),s=20,marker=point_mk[i])  # 散布図のみならこの行をだけ有効に（s:マーカーサイズ、marker:マーカ種類）
 
-print(df4.iloc[:,1].to_list())
+# print(df4.iloc[:,1].to_list())
 # ## 軸の値を補助単位に合わせて変更
 # ### 軸設定用のオブジェクト生成
 xticks, strs = pylab.xticks()
@@ -242,11 +265,25 @@ yticks, strs = pylab.yticks()
 # pylab.xticks(xticks, ["%g" % x for x in 10**-dt_x * xticks])
 # pylab.yticks(yticks, ["%g" % x for x in 10**-dt_y * yticks])
 # ## 横軸と縦軸の表示範囲を設定
-# ax.set_xlim(0,1)   # 必要に応じて最大、最小値を設定
-# ax.set_ylim(0,1)  # 必要に応じて最大、最小値を設定
+# ax.set_xlim(0,10)   # 必要に応じて最大、最小値を設定
+# ax.set_ylim(0,0.2)  # 必要に応じて最大、最小値を設定
 # ## 目盛り間隔設定
 # ax.set_xticks(np.arange(0,100,10))  # np.arrange(開始値,終了値,刻み幅)で設定
 # ax.set_yticks(np.arange(-50,50,10))  # np.arrange(開始値,終了値,刻み幅)で設定
+
+# # 凡例を追加
+labels = y_sig  # 入力データに合わせて設定。（手動なら labels = ["凡例1","凡例2","凡例3"]）
+# labels = []
+# for text in y_sig:
+#     a=text.replace("{","",1)    # 数式の下付き添え字をかくときのカッコを削除
+#     b=a.replace("}","",1)   # 数式の下付き添え字をかくときのカッコを削除
+#     c=re.findall("(?<=\{).+?(?=\})",b) # 数式の下付き添え字だけを抽出
+#     # print("c",c)
+#     labels.append(re.sub("\['|\']","",str(c)))  # 余分なカッコなどを取り出し、凡例のラベルに登録
+# print("labels",labels)
+
+ax.legend(labels, frameon=False, loc="upper left",
+          bbox_to_anchor=(1, 1))  # 凡例の位置を右上に、枠線は無し。
 
 # # 軸ラベルの設定。補助単位は自動で設定。
 # ## 軸に数式フォーマットが使えるように設定
@@ -257,18 +294,15 @@ ax.yaxis.set_major_formatter(ptick.ScalarFormatter(
 # ## 入力データをもとに軸ラベルを自動設定
 # ax.ticklabel_format(style="sci",axis="x",scilimits=(-3,-3)) # 10^(-3)固定で表示
 # ax.ticklabel_format(style="sci",axis="y",scilimits=(9,9)) # 10^(9)固定で表示
-ax.set_xlabel("{0} {1} [{2}{3}".format(x_label[0], x_label[1], aux_unit_x, x_unit[cur_x:]), fontsize=12,
+# y_label[0][1] = "$H$" # y軸の量記号を手動設定
+ax.set_xlabel("{0} {1} [{2}{3}".format(x_label[0].replace("_", " "), get_greek(x_label[1]), aux_unit_x, x_unit[cur_x:]), fontsize=12,
               fontname="Times New Roman")    # 軸ラベルを英語で入力。$マークに挟まれている範囲は数式が入力可能。ここでもフォントサイズの設定が可能。
-ax.set_ylabel("{0} {1} [{2}{3}".format(y_label[0][0], y_label[0][1], aux_unit_y, y_unit[0][cur_y:]), fontsize=12,
+ax.set_ylabel("{0} {1} [{2}{3}".format(y_label[0][0].replace("_", " "), get_greek(y_label[0][1]), aux_unit_y, y_unit[0][cur_y:]), fontsize=12,
               fontname="Times New Roman")  # 軸ラベルを英語で入力。$マークに挟まれている範囲は数式が入力可能。ここでもフォントサイズの設定が可能。
 
-# # 凡例を追加
-labels = y_sig  # 入力データに合わせて設定。（手動なら labels = ["凡例1","凡例2","凡例3"]）
-ax.legend(labels, frameon=False, loc="upper left",
-           bbox_to_anchor=(1, 1),)  # 凡例の位置を右上に、枠線は無し。
-fig.tight_layout()  # 凡例や軸ラベルがグラフエリアからはみ出さないように
-
 # # グラフの表示と保存
+fig.tight_layout()  # 凡例や軸ラベルがグラフエリアからはみ出さないように
 # plt.plot.scatter(x=df4.columns.values[0],y=df4.columns.values[1])
+fig.savefig(output_file_name)    # graphという名前でグラフを保存。形式はsvg（拡大しても綺麗）。
+print("ファイル名「{0}」でグラフを保存しました".format(output_file_name))
 plt.show()
-fig.savefig("graph.svg")    # graphという名前でグラフを保存。形式はsvg（拡大しても綺麗）。

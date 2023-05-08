@@ -45,14 +45,32 @@ Excelでグラフを研究室のフォーマットに合わせる作業が大変
 
 ![test1](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test1/graph.svg)
 
+☝ test1
+
 ![test2](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test2/graph.svg)
+
+☝ test2
 
 ![test3](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test3/graph.svg)
 
+☝ test3
+
 ![test4](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test4/graph.svg)
+
+☝ test4
 
 ![test5](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test5/graph.svg)
 
+☝ test5
+
 ![test6](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test6/graph.svg)
 
+☝ test6
+
 ![test7](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test7/graph.svg)
+
+☝ test7
+
+![test8](https://github.com/TomokiIkegami/Lab_Grapher_TI/blob/main/test8/graph.svg)
+
+☝ test8
